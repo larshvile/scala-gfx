@@ -1,0 +1,19 @@
+subprojects {
+    apply plugin: 'scala'
+
+    group = 'net.hulte.sgfx'
+    version = '0.1'
+
+    archivesBaseName = group + "-" + name
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        scalaTools 'org.scala-lang:scala-compiler:2.9.1'
+        scalaTools 'org.scala-lang:scala-library:2.9.1'
+        compile 'org.scala-lang:scala-library:2.9.1'
+    }
+}
+

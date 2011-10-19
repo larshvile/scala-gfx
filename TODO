@@ -1,0 +1,43 @@
+
+# AnimatedSprite, Image / animation-defs (speed/image-index numbers etc) + all other stuff required, getRenderable() produces 'this'
+# version of the animation for drawing
+
+# Library for image-io, load images + convert to compatible using the GraphicsConfig, 
+# - is the graphicsConfig-stuff in Screen really necessary, the drawing-graphics is obtained from Frame's
+#    buffer-strategy??
+# - images should be loaded/converted using the correct graphicsConfig, shared somehow
+# - load/resample/flip comes to mind..
+
+# graphics-packagen bør splittes opp litt bedre, kanskje i component+type ala
+  graphics
+    Renderable
+    Ordered
+    ..
+    components
+      Label
+      Background
+      Shape -> Rectangle / Circle etc..
+
+# simple physics engine
+# en Trait som inneholder alt som trengs for CD, center/size/mass/direction/speed etc...
+
+# physics/drawing kan testes med en CD-enabled particle-engine =)
+
+# Add some drawing bitch =) test it
+
+# loading of compatible images, framework for it?
+
+# implement keyboard-stuff
+
+# particle-engine stuff, framework for it?
+
+# Fullscreen support, add it? param inn til Application.create()?
+
+# keyboard/mouse input
+  Application spør Window synchronized før hver process() etter input-events, window !? (or the Future-version !!)
+
+# Game / state-machine
+  Games are state-machines, could we build a light-framework for this in the trait, or maybe thats another
+  Trait??
+
+
