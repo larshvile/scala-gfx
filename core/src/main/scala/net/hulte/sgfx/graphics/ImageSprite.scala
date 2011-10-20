@@ -1,4 +1,4 @@
-package net.hulte.gamelib.graphics
+package net.hulte.sgfx.graphics
 
 import java.awt._
 import java.awt.image.BufferedImage

@@ -5,11 +5,11 @@ import java.awt._
 
 import core._
 import graphics._
-import net.hulte.gamelib.graphics.Image
+import net.hulte.sgfx.graphics.Image
 
 
-object Test extends scala.Application {
-  Application.create(640, 480, new TestBed())
+object Test extends scala.App {
+  Application.create(800, 600, new Test())
 }
 
 
@@ -17,8 +17,10 @@ private[this] class Test extends Game {
 
   val name = "Test"
 
-  val img = new ImageSprite(Image.load(new File("/home/lars/Desktop/sandra-game/graphics/Heroes_of_Might_and_Magic_II/CMBTHROB0006.png")),
+  val img = new ImageSprite(Image.load(
+    new File("/home/lars/tmp/Heroes_of_Might_and_Magic_II/CMBTHROB0006.png")),
     new Point(150, 150))
+    
   var xDir = true
   var yDir = true
 
@@ -40,7 +42,7 @@ private[this] class Test extends Game {
 
     if ((img.pos.x <= 0) || (img.pos.x >= (screen.size.x - img.size.x))) xDir = !xDir
     if ((img.pos.y <= 0) || (img.pos.y >= (screen.size.y - img.size.y))) yDir = !yDir
-    
+
     screen.add(img)
 
     screen.add(new Renderable() {

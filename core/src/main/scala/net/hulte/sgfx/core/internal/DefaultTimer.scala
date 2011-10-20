@@ -1,6 +1,6 @@
-package net.hulte.gamelib.core.internal
+package net.hulte.sgfx.core.internal
 
-import net.hulte.gamelib.core.Timer
+import net.hulte.sgfx.core.Timer
 
 
 /**

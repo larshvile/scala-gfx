@@ -1,4 +1,4 @@
-package net.hulte.gamelib.core
+package net.hulte.sgfx.core
 
 
 /**

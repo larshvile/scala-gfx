@@ -1,4 +1,4 @@
-package net.hulte.gamelib.graphics
+package net.hulte.sgfx.graphics
 
 import java.awt.image.BufferedImage
 import java.awt.{Graphics2D, Point}

@@ -1,4 +1,4 @@
-package net.hulte.gamelib.core
+package net.hulte.sgfx.core
 
 import scala.actors.Actor._
 
@@ -6,9 +6,9 @@ import java.awt.Point
 
 import internal.{Window, CloseWindow, DrawScreen, DrawScreenFinished}
 import internal.DefaultTimer
-import net.hulte.gamelib.graphics.{Renderable, Composite}
-import net.hulte.gamelib.graphics.Label
-import net.hulte.gamelib.graphics.Alignment._
+import net.hulte.sgfx.graphics.{Renderable, Composite}
+import net.hulte.sgfx.graphics.Label
+import net.hulte.sgfx.graphics.Alignment._
 
 
 /**

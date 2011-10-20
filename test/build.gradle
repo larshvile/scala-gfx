@@ -2,3 +2,8 @@ dependencies {
     compile project(':core')
 }
 
+task(run, dependsOn: 'buildNeeded', type: JavaExec) {
+  main = 'net.hulte.sgfx.Test'
+  classpath = sourceSets.main.runtimeClasspath
+}
+

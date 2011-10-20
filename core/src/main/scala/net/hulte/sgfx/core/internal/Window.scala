@@ -1,4 +1,4 @@
-package net.hulte.gamelib.core.internal
+package net.hulte.sgfx.core.internal
 
 import scala.actors.Actor
 
@@ -6,8 +6,8 @@ import java.awt._
 import java.awt.event._
 import java.awt.image.BufferStrategy
 
-import net.hulte.gamelib.core.{Application, Screen, Keyboard}
-import net.hulte.gamelib.graphics.Renderable
+import net.hulte.sgfx.core.{Application, Screen, Keyboard}
+import net.hulte.sgfx.graphics.Renderable
 
 
 /**
@@ -74,7 +74,7 @@ private[core] class Window(screenSize: Point, private val title: String) extends
   private def createFrame(): (Frame, Insets) = {
       val f = new Frame(title, config)
 
-    // f.setUndecorated(true) // TODO add full-screen toggle later??
+    //f.setUndecorated(true) // TODO add full-screen toggle later??
     f.setResizable(false)
     f.setIgnoreRepaint(true)
     f.pack()
