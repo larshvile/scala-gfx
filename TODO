@@ -1,4 +1,6 @@
 
+# testing plz
+
 # AnimatedSprite, Image / animation-defs (speed/image-index numbers etc) + all other stuff required, getRenderable() produces 'this'
 # version of the animation for drawing
 
@@ -23,8 +25,6 @@
 
 # physics/drawing kan testes med en CD-enabled particle-engine =)
 
-# Add some drawing bitch =) test it
-
 # loading of compatible images, framework for it?
 
 # implement keyboard-stuff
@@ -35,9 +35,4 @@
 
 # keyboard/mouse input
   Application spør Window synchronized før hver process() etter input-events, window !? (or the Future-version !!)
-
-# Game / state-machine
-  Games are state-machines, could we build a light-framework for this in the trait, or maybe thats another
-  Trait??
-
 

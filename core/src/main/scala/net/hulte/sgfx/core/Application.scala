@@ -10,41 +10,37 @@ import net.hulte.sgfx.graphics.{Renderable, Composite}
 import net.hulte.sgfx.graphics.Label
 import net.hulte.sgfx.graphics.Alignment._
 
+import org.apache.log4j.Logger
+
 
 /**
- * Entry-point for games. Stars and stops the application used to execute games. 
- * 
+ * Entry-point for games. Starts and stops the application used to execute games.
+ *
  * @author lars
  */
 object Application {
-  
+
+  val logger = Logger.getLogger(classOf[Application])
   private var thread: GameThread = null
-  
-  /**
-   * Creates and starts a new <code>GameApplication</code>.
-   */
+
   def create(screenWidth: Int, screenHeight: Int, game: Game) {
     assert (thread == null)
-    println("starting " + game.name)
+    logger.info("starting " + game)
 
-    val window = new Window(new Point(screenWidth, screenHeight), game.name)
+    val window = new Window(new Point(screenWidth, screenHeight), game.toString)
     startThread(new GameThread(new Application(game, window)))
   }
-
 
   private def startThread(t: GameThread) {
     thread = t;
     new Thread(thread).start()
   }
-  
-  
+
   /**
    * Stops and destroys the running <code>GameApplication</code>.
    */
   def destroy() {
-    if (thread == null) {
-      return
-    } else {
+    if (thread != null) {
       thread.destroy()
       thread = null
     }
@@ -58,11 +54,12 @@ object Application {
  * @author lars
  */
 private[this] final class Application private (game: Game, window: Window) {
- 
+  import Application.logger
+
   val minTimePerFrame = 1000 / 100 // try to land at max ~100 fps 
 
   val timer = new DefaultTimer
-  
+
   var currentFrameId: Long = 0
   @volatile var lastDrawnFrameId: Long = 0
 
@@ -76,7 +73,6 @@ private[this] final class Application private (game: Game, window: Window) {
     }
   }
 
-
   /**
    * Called upon application-exit to perform various cleanup tasks.
    */
@@ -84,8 +80,7 @@ private[this] final class Application private (game: Game, window: Window) {
     lastFrameActor ! "close"
     window ! CloseWindow()
   }
-  
-  
+
   /**
    * Processes application-logic for a single frame.
    */
@@ -94,7 +89,6 @@ private[this] final class Application private (game: Game, window: Window) {
     updateGame()
     chillOut()
   }
-
 
   /**
    * Processes game-logic. Also wraps the game's screen in a renderable-composite,
@@ -116,18 +110,17 @@ private[this] final class Application private (game: Game, window: Window) {
     drawScreen(screenContents)
   }
 
-
   /**
    * Handles screen-drawing, if Window is lagging the drawing is done
    * as a synchronous operation.
    */
   def drawScreen(content: Renderable) {
-  val frameLag = (currentFrameId - lastDrawnFrameId)
+    val frameLag = (currentFrameId - lastDrawnFrameId)
     val drawSynched = (frameLag > 1)
     val msg = DrawScreen(content, currentFrameId, lastFrameActor, drawSynched)
 
     if (drawSynched) {
-      println("(drawing synched, frameLag: " + frameLag) // TODO remove later
+      logger.debug("drawing synched, frameLag: " + frameLag)
       window !? msg
     } else {
       window ! msg
@@ -135,7 +128,6 @@ private[this] final class Application private (game: Game, window: Window) {
     currentFrameId += 1
   }
 
-  
   /**
    * Don't stress the cpu more than necessary, try to keep the number of ms
    * used per frame greater than the lower limit.
@@ -162,9 +154,10 @@ private[this] class DebugHud(fps: Double) extends Composite(Int.MaxValue) { // T
  */
 import java.util.concurrent.atomic.AtomicBoolean
 private[this] class GameThread(app: Application) extends Runnable {
-  
+
+  private val logger = Logger.getLogger(getClass)
   private val stopFlag: AtomicBoolean = new AtomicBoolean
-  
+
   override def run() {
     try {
         while (!stopFlag.get()) {
@@ -172,11 +165,10 @@ private[this] class GameThread(app: Application) extends Runnable {
         }
     } finally {
         app.destroy()
-        println("stopped game-logic thread")
+        logger.debug("stopped game-logic thread")
     }
   }
 
-  
   def destroy() {
     stopFlag.set(true)
   }

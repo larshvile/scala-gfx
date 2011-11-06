@@ -9,6 +9,8 @@ import java.awt.image.BufferStrategy
 import net.hulte.sgfx.core.{Application, Screen, Keyboard}
 import net.hulte.sgfx.graphics.Renderable
 
+import org.apache.log4j.Logger
+
 
 /**
  * Messages which causes the window to close.
@@ -17,7 +19,7 @@ case class CloseWindow()
 
 /**
  * Message used to draw a new screen. The frameId is passed
- * back to the client so it can synchronize incase it's creating
+ * back to the client so it can synchronize in case it's creating
  * screens faster than we can draw 'em.
  */
 case class DrawScreen(screen: Renderable, frameId: Long, respondTo: Actor,
@@ -37,6 +39,7 @@ case class DrawScreenFinished(frameId: Long)
  */
 private[core] class Window(screenSize: Point, private val title: String) extends Actor {
 
+  private val logger = Logger.getLogger(getClass())
   private val env:GraphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
   private val device:GraphicsDevice = env.getDefaultScreenDevice()
   private val config:GraphicsConfiguration = device.getDefaultConfiguration()
@@ -52,7 +55,7 @@ private[core] class Window(screenSize: Point, private val title: String) extends
   // make sure to exit properly when the frame is closed
   frame.addWindowListener(new WindowAdapter() {
     override def windowClosing(e: WindowEvent) {
-      println("window closing, shutting down")
+      logger.debug("window closing, shutting down")
       Application.destroy()
     }
   })
@@ -120,7 +123,7 @@ private[core] class Window(screenSize: Point, private val title: String) extends
   private def close() {
     frame.setVisible(false)
     frame.dispose()
-    println("window closed")
+    logger.info("window closed")
   }
 
 

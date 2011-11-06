@@ -15,15 +15,14 @@ object Test extends scala.App {
 
 private[this] class Test extends Game {
 
-  val name = "Test"
-
   val img = new ImageSprite(Image.load(
     new File("/home/lars/tmp/Heroes_of_Might_and_Magic_II/CMBTHROB0006.png")),
     new Point(150, 150))
-    
+
   var xDir = true
   var yDir = true
 
+  override def toString = "Test"
 
   def process(screen: Screen, timer: Timer, keyboard: Keyboard) {
 
