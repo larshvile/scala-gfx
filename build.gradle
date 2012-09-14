@@ -1,5 +1,6 @@
 subprojects {
     apply plugin: 'scala'
+    apply plugin: 'eclipse'
 
     group = 'net.hulte.sgfx'
     version = '0.1'
