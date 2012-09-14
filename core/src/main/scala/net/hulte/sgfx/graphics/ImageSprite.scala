@@ -1,31 +1,22 @@
-package net.hulte.sgfx.graphics
+package net.hulte.sgfx
+package graphics
 
-import java.awt._
+import geom.Point
+
+import java.awt.Graphics2D
+import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 
-
 /**
- * Represents a static image.
+ * A static image.
  */
-class ImageSprite(private val img: Image) extends Sprite[Unit] {
+final class ImageSprite(private val img: BufferedImage) extends Sprite {
 
-  val pos: Point = new Point(0, 0)
+  size = Point(img.getWidth, img.getHeight)
 
-  def this(img: Image, pos: Point) = {
-    this(img)
-    this.pos.x = pos.x
-    this.pos.y = pos.y
+  override protected def draw(center: Point, size: Point, r: Graphics2D, screenSize: Point) {
+    val xForm = new AffineTransform(r.getTransform())
+    xForm.translate(center.x - size.x / 2, center.y - size.y / 2)
+    r.drawImage(img, xForm, null)
   }
-
-  def size: Point = img.size
-
-  protected def draw(state: Unit, pos: Point,
-      renderer: Graphics2D, screenSize: Point) = {
-    img.draw(renderer, (r: Graphics2D, i: BufferedImage) => {
-      r.drawImage(i, pos.x, pos.y, null)
-    })
-  }
-
-  protected def getState(): Unit = {}
 }
-

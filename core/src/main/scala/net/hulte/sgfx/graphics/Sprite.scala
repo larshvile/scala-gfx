@@ -1,43 +1,31 @@
-package net.hulte.sgfx.graphics
+package net.hulte.sgfx
+package graphics
 
-import java.awt._
+import core.Renderable
+import geom.Point
+import java.awt.Graphics2D
 
-
-/**
- * Trait representing a Sprite. A Sprite differs from a Renderable in that
- * it is stateful, and has a concept of position/size etc, and should produce
- * a stateless Renderable rather than being one.
- *
- * The generic type T contains the stateful data required for drawing, except
- * for the position.
- */
-trait Sprite[T] {
-
-  def pos: Point
-  def size: Point
-
-  /**
-   * Returns an immutable Renderable which can be drawn.
-   */
-  def getRenderable(): Renderable = new Renderable() {
-    val posNow = new Point(pos)
-    val stateNow = getState()
-
-    override def render(renderer: Graphics2D, screenSize: Point) = {
-      draw(stateNow, posNow, renderer, screenSize)
+object Sprite {
+  
+  implicit def asRenderable(s: Sprite): Renderable = new Renderable() {
+    val center = s.center
+    val size = s.size
+    def render(renderer: Graphics2D, screenSize: java.awt.Point) = {
+      s.draw(center, size, renderer, screenSize)
     }
   }
-
-  /**
-   * Returns the internal state required for drawing the sprite.
-   */
-  protected def getState(): T
-
-  /**
-   * Draws the sprite.
-   */
-  protected def draw(state: T, pos: Point, renderer: Graphics2D,
-      screenSize: Point): Unit
-
 }
 
+/**
+ * A sprite differs from a {@link Renderable} in that it is stateful. It produces a stateless
+ * {@link Renderable} instead of being one.
+ */
+trait Sprite {
+  
+  // TODO mutable cr@p .. not really ideal...
+  var center = Point.Zero
+  var size = Point.Zero
+
+  protected def draw(center: Point, size: Point, renderer: Graphics2D, screenSize: Point)
+
+}

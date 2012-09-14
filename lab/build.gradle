@@ -3,7 +3,8 @@ dependencies {
 }
 
 task(run, dependsOn: 'buildNeeded', type: JavaExec) {
-  main = 'net.hulte.sgfx.Test'
+  main = 'Lab'
   classpath = sourceSets.main.runtimeClasspath
+  jvmArgs = ["-Dsun.java2d.opengl=True"]
 }
 

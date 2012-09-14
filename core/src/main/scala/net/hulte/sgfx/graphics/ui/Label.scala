@@ -1,13 +1,12 @@
-package net.hulte.sgfx.graphics
+package net.hulte.sgfx
+package graphics
+package ui
+
+import core.Renderable
+import graphics.Alignment._
 
 import java.awt._
 
-import Alignment._
-
-
-/**
- * Companion object for Label with helper-methods for construction.
- */
 object Label {
 
   val DefaultFontSize = 14
@@ -15,15 +14,13 @@ object Label {
   val DefaultFont = new Font(DefaultFontFace, Font.PLAIN, DefaultFontSize)
   val DefaultColor = new Color(255, 255, 255)
 
-
   /**
    * Creates a new label using the default font/colors.
    */
   def create(text: String, align: Alignment): Label =
     new Label(text, DefaultColor, DefaultFont, align)
-  
-}
 
+}
 
 /**
  * Simple label used to display a line of text.
@@ -31,28 +28,16 @@ object Label {
 final class Label(text: String, color: Color, font: Font,
     align: Alignment) extends Renderable {
 
-  private var textWidth = -1
-  private var textHeight = 0
-  private var textDescent = 0
-
   override def render(r: Graphics2D, size: Point) {
-    getFontMetrics(r)
+    val metrics = r.getFontMetrics(font)
 
     r.setFont(font)
     r.setColor(color)
-    r.drawString(text, getX(size.x), getY(size.y))
+    r.drawString(text, getX(metrics, size.x), getY(metrics, size.y))
   }
 
-  private def getFontMetrics(r: Graphics2D) {
-    if (textWidth == -1) { // might be an expensive op, so lets cache it
-      val m = r.getFontMetrics(font)
-      textWidth = m.stringWidth(text)
-      textHeight = m.getHeight()
-      textDescent = m.getDescent()
-    }
-  }
-
-  private def getX(width: Int) = {
+  private def getX(metrics: FontMetrics, width: Int) = {
+    val textWidth = metrics.stringWidth(text)
     align._1 match {
       case Left() => 0
       case Center() => (width - textWidth) / 2
@@ -60,16 +45,13 @@ final class Label(text: String, color: Color, font: Font,
     }
   }
 
-  private def getY(height: Int) = {
+  private def getY(metrics: FontMetrics, height: Int) = {
+    val textHeight = metrics.getHeight()
+    val textDescent = metrics.getDescent()
     align._2 match {
-      case Top() => textHeight - textDescent
+      case Top() => textHeight - textDescent // TODO what about the ascent??
       case Middle() => ((height + textHeight) / 2) - textDescent
       case Bottom() => height - textDescent
     }
   }
-  
-  override def toString(): String = {
-    return "Label(" + text + ")"
-  }
 }
-

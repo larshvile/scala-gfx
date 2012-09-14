@@ -1,10 +1,6 @@
 package net.hulte.sgfx.core
 
-
 /**
- * Trait which provides keyboard-input from the user.
- *
- * @author lars
+ * Provides keyboard-input from the user.
  */
 trait Keyboard
-

@@ -1,6 +1,5 @@
 package net.hulte.sgfx.graphics
 
-
 object Alignment {
 
   abstract sealed class Horizontal
@@ -15,4 +14,3 @@ object Alignment {
 
   type Alignment = (Horizontal, Vertical)
 }
-

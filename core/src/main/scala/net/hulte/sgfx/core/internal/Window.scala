@@ -1,16 +1,15 @@
-package net.hulte.sgfx.core.internal
+package net.hulte.sgfx
+package core
+package internal
 
-import scala.actors.Actor
-
-import java.awt._
-import java.awt.event._
+import core._
+import java.awt.{Graphics2D, GraphicsConfiguration, GraphicsDevice, GraphicsEnvironment, Insets, Point}
+import java.awt.event.{WindowAdapter, WindowEvent}
 import java.awt.image.BufferStrategy
-
-import net.hulte.sgfx.core.{Application, Screen, Keyboard}
-import net.hulte.sgfx.graphics.Renderable
-
+import javax.swing.{JFrame, JPanel}
 import org.apache.log4j.Logger
-
+import scala.actors.Actor
+import java.awt.Dimension
 
 /**
  * Messages which causes the window to close.
@@ -18,35 +17,30 @@ import org.apache.log4j.Logger
 case class CloseWindow()
 
 /**
- * Message used to draw a new screen. The frameId is passed
- * back to the client so it can synchronize in case it's creating
- * screens faster than we can draw 'em.
+ * Message used to paint a new screen. The frameId is passed back to the client so it can keep track of the
+ * rendering speed.
  */
-case class DrawScreen(screen: Renderable, frameId: Long, respondTo: Actor,
-    synchronized: Boolean)
+case class PaintScreen(screenId: Int, screenContents: List[Renderable], respondTo: Actor)
 
 /**
- * Callback-message for DrawScreen indicating that a frame
- * has been drawn.
+ * The response of {@link PaintScreen}, indicating that the screen has in fact been painted.
  */
-case class DrawScreenFinished(frameId: Long)
+case class ScreenPainted(screenId: Int)
 
 
 /**
  * A window used for user-input and drawing.
- *
- * @author lars
  */
-private[core] class Window(screenSize: Point, private val title: String) extends Actor {
+private[core] class Window(val size: Point, private val title: String) extends Actor {
 
   private val logger = Logger.getLogger(getClass())
-  private val env:GraphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
-  private val device:GraphicsDevice = env.getDefaultScreenDevice()
-  private val config:GraphicsConfiguration = device.getDefaultConfiguration()
+  private val env: GraphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
+  private val device: GraphicsDevice = env.getDefaultScreenDevice()
+  private val config: GraphicsConfiguration = device.getDefaultConfiguration()
 
-  private val (frame, insets) = createFrame()
+  private val frame = createFrame()
 
-  private val (bufferStrategy) = {
+  private val bufferStrategy = {
     frame.createBufferStrategy(2)
     val b: BufferStrategy = frame.getBufferStrategy()
     b
@@ -55,7 +49,7 @@ private[core] class Window(screenSize: Point, private val title: String) extends
   // make sure to exit properly when the frame is closed
   frame.addWindowListener(new WindowAdapter() {
     override def windowClosing(e: WindowEvent) {
-      logger.debug("window closing, shutting down")
+      logger.debug("Window closing, shutting down.")
       Application.destroy()
     }
   })
@@ -64,40 +58,6 @@ private[core] class Window(screenSize: Point, private val title: String) extends
   start()
 
 
-  /**
-   * Returns the screen-size as a <code>Point</code>.
-   */
-  def size: Point = screenSize
-
-
-  /**
-   * Creates the frame, returns a reference to it, and the frame's
-   * insets (borders-sizes).
-   */
-  private def createFrame(): (Frame, Insets) = {
-      val f = new Frame(title, config)
-
-    //f.setUndecorated(true) // TODO add full-screen toggle later??
-    f.setResizable(false)
-    f.setIgnoreRepaint(true)
-    f.pack()
-
-    val insets = f.getInsets()
-    val adjustedSize = new Point(screenSize.x + insets.left + insets.right,
-      screenSize.y + insets.top + insets.bottom)
-    val c = env.getCenterPoint()
-
-    f.setSize(adjustedSize.x, adjustedSize.y);
-    f.setLocation(c.x - adjustedSize.x / 2, c.y - adjustedSize.y /2)
-    f.setVisible(true)
-    
-    (f, insets)
-  }
-
-
-  /**
-   * Handles incoming messages.
-   */
   def act() {
     while (true) {
       receive {
@@ -106,39 +66,30 @@ private[core] class Window(screenSize: Point, private val title: String) extends
           exit()
         }
 
-        case DrawScreen(screen, frameId, respondTo, synched) => {
-          drawScreen(screen)
-          respondTo ! DrawScreenFinished(frameId)
-          if (synched) {
-            reply {
-              null
-            }
-          }
+        case PaintScreen(screenId, screenContents, respondTo) => {
+          drawScreen(screenContents)
+          respondTo ! ScreenPainted(screenId)
         }
       }
     }
   }
 
-
   private def close() {
-    frame.setVisible(false)
     frame.dispose()
-    logger.info("window closed")
+    logger.info("Window closed.")
   }
 
-
   /**
-   * Draws a <code>Renderable</code> to the screen by using double-buffering.
-   * The weird pattern here is taken directly from BufferStrategy's javadoc.
+   * Draws {@link Renderable}s to the screen by using double-buffering. The weird pattern here is taken
+   * directly from the {@link BufferStrategy} javadoc.
    */
-  private def drawScreen(screen: Renderable) {
+  private def drawScreen(screenContents: List[Renderable]) {
     val s = bufferStrategy;
     do {
       do {
         val renderer = s.getDrawGraphics().asInstanceOf[Graphics2D]
         try {
-          adjustForFrameDecoration(renderer)
-          screen.render(renderer, screenSize)
+          screenContents.foreach { _.render(renderer, size) }
         } finally {
           renderer.dispose()
         }
@@ -146,12 +97,23 @@ private[core] class Window(screenSize: Point, private val title: String) extends
       s.show()
     } while (s.contentsLost())
   }
-
-
-  private def adjustForFrameDecoration(r: Graphics2D) {
-    if (!frame.isUndecorated()) {
-      r.translate(insets.left, insets.top)
-    }
+  
+  private def createFrame() = {
+    val f = new JFrame(title, config)
+    
+    f.setResizable(false)
+    f.setIgnoreRepaint(true)
+    
+    val p = new JPanel
+    p.setPreferredSize(new Dimension(size.x, size.y))
+    f.getContentPane add p
+    
+    f.pack
+    
+    val c = env.getCenterPoint
+    f.setLocation(c.x - f.getWidth / 2, c.y - f.getHeight / 2)
+    f.setVisible(true)
+    
+    f
   }
 }
-
