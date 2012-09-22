@@ -4,9 +4,11 @@ import geom._
 import graphics._
 import ui._
 import Ordered._
+
 import java.io.File
 import java.awt.{Color, Graphics2D}
 import java.awt.Rectangle
+import Color._
 
 object Lab extends scala.App {
   Application.create(800, 600, new Lab())
@@ -25,13 +27,8 @@ private[this] class Lab extends LogicLoop {
 
   override def toString = "The SGFX Laboratory"
 
-  def processFrame(screen: Screen, timer: Timer, keyboard: Keyboard) {
+  def processFrame(screenSize: Point, timer: Timer, keyboard: Keyboard) = {
     
-    // TODO how about returning a list of Renderables instead?
-
-    screen.add(new DebugHud(timer.fps))
-    screen.add(new Background(new Color(0, 0, 0)))
-
     // move that horse...
     val xMove = (if (xDir) 1 else -1) * 200 * timer.frameSecond
     val yMove = (if (yDir) 1 else -1) * 150 * timer.frameSecond
@@ -40,10 +37,10 @@ private[this] class Lab extends LogicLoop {
     val size = horse.size / 2
     
     if ((horse.center - size).x <= 0) xDir = true
-    if ((horse.center + size).x >= screen.size.x) xDir = false
+    if ((horse.center + size).x >= screenSize.x) xDir = false
     if ((horse.center - size).y <= 0) yDir = true
-    if ((horse.center + size).y >= screen.size.y) yDir = false
+    if ((horse.center + size).y >= screenSize.y) yDir = false
 
-    screen.add(horse)
+    horse :: new DebugHud(timer.fps) :: new Background(BLACK) :: Nil 
   }
 }

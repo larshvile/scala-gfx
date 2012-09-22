@@ -98,16 +98,8 @@ private final class Application private (logicLoop: LogicLoop, window: Window) {
   }
 
   private def processFrame() {
-    var screenContents = List[Renderable]()
-
-    val screen = new Screen() {
-      def size: Point = window.size
-      def add(r: Renderable) {
-        screenContents = r :: screenContents
-      }
-    }
-
-    logicLoop.processFrame(screen, timer, null) // TODO keyboard
+    val keyboard: Keyboard = null // TODO add me
+    val screenContents = logicLoop.processFrame(window.size, timer, keyboard)
     paintScreen(screenContents.sortBy(orderOf(_)))
   }
 
