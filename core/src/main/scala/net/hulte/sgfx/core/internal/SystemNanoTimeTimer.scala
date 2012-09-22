@@ -1,8 +1,5 @@
-package net.hulte.sgfx
-package core
+package net.hulte.sgfx.core
 package internal
-
-import core.Timer
 
 import java.util.concurrent.TimeUnit._
 

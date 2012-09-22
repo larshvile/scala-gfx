@@ -1,15 +1,14 @@
-package net.hulte.sgfx
-package core
+package net.hulte.sgfx.core
 package internal
 
-import core._
-import java.awt.{Graphics2D, GraphicsConfiguration, GraphicsDevice, GraphicsEnvironment, Insets, Point}
+import java.awt.{Dimension, Graphics2D, GraphicsConfiguration, GraphicsDevice, GraphicsEnvironment,
+  Insets, Point}
 import java.awt.event.{WindowAdapter, WindowEvent}
 import java.awt.image.BufferStrategy
 import javax.swing.{JFrame, JPanel}
 import org.apache.log4j.Logger
 import scala.actors.Actor
-import java.awt.Dimension
+
 
 /**
  * Messages which causes the window to close.

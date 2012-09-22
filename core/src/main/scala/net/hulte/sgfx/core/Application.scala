@@ -32,7 +32,7 @@ object Application {
 
   def destroy() {
     if (runner != null) {
-      runner.destroy()
+      runner.destroy
       runner = null
     }
   }
@@ -40,7 +40,7 @@ object Application {
   private def start {
     val t: Thread = new Thread(runner, "apprunner")
     t.setDaemon(true)
-    t.start()
+    t.start
   }
 
   private class ApplicationRunner(app: Application) extends Runnable {
@@ -49,10 +49,10 @@ object Application {
     override def run() {
       try {
         while (!stopFlag.get()) {
-          app.update()
+          app.update
         }
       } finally {
-        app.destroy()
+        app.destroy
       }
     }
 
@@ -67,6 +67,7 @@ private final class Application private (logicLoop: LogicLoop, window: Window) {
   import Application._
 
   val timer = new SystemNanoTimeTimer
+  val keyboard = AwtKeyboard.install
   
   val paintMonitor = new Object
   var currentScreenId = 0
@@ -92,15 +93,15 @@ private final class Application private (logicLoop: LogicLoop, window: Window) {
   }
 
   def update() {
-    timer.tick()
-    processFrame()
-    chillOut()
+    timer.tick
+    keyboard.update
+    processFrame
+    chillOut
   }
 
   private def processFrame() {
-    val keyboard: Keyboard = null // TODO add me
     val screenContents = logicLoop.processFrame(window.size, timer, keyboard)
-    paintScreen(screenContents.sortBy(orderOf(_)))
+    paintScreen(screenContents sortBy orderOf _)
   }
 
   private def paintScreen(contents: List[Renderable]) {
